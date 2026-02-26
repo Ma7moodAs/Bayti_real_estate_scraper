@@ -1,5 +1,5 @@
 import scrapy
-
+import re
 
 class HomesSpiderSpider(scrapy.Spider):
     name = "homes_spider"
@@ -21,6 +21,49 @@ class HomesSpiderSpider(scrapy.Spider):
             yield response.follow(next_page,callback=self.parse)
 
     def parse_property(self,response):
-            pass
+        
+        # Bedrooms number extraction
+        Bedrooms = response.css('i[title="Bedroom"] + p span.font-wt-600::text').get()
+        Bedrooms = int(Bedrooms.strip()) if Bedrooms else None
+        # Bathrooms number extraction
+        Bathrooms = response.css('i[title="Bathroom"] + p span.font-wt-600::text').get()
+        Bathrooms = int(Bathrooms.strip()) if Bathrooms else None
+        # Built up area extraction
+        Area_sqm = response.css('i[title="Built Up Area"] + p span.font-wt-600::text').get()
+        Area_sqm = float(Area_sqm.strip()) if Area_sqm else None
+        # Annual and monthly rent price extraction
+        section_text = ' '.join(response.xpath('//[@id="profile-description"]//text()')).getall()
+        # Monthly Price rental extraction
+        price_monthly = re.search(r'السعر\s*\(شهري\).*?([\d,]+)',section_text)
+        price_monthly = int(price_monthly.group(1).replace(',','')) if price_monthly else None
+        # Yearly Price rental extraction
+        price_annualy = re.search(r'السعر\s*\(سنوي\).*?([\d,]+)',section_text)
+        price_annualy = int(price_annualy.group(1).replace(',','')) if price_annualy else None
+
+        # Property special features extraction section
+        features = {}
+        rows = response.css('div.row')
+        for row in rows:
+            label = row.css('p.font-wt-600::text').get()
+            value = row.css('p.font-wt-500::text').get()
+            if label and value:
+                label = label.strip().replace(':','')
+                value = value.strip()
+                features[label] = value
+        
+        # Features extraction
+        area_raw = features.get('مساحة بناء')
+        area = float(area_raw.split()[0]) if area_raw else None
+        furnished_raw = features.get('مفروش')
+        furnished = 1 if furnished_raw == 'مفروشة' else 0
+        pool_raw = features.get('مسبح')
+        pool = 1 if pool_raw == 'نعم' else 0
+        floor = features.get('الطابق')
+        floor_type = features.get('نوع الطابق ')
+        
+        
+        
+            
+
 
         

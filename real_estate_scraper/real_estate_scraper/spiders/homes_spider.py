@@ -9,8 +9,15 @@ class HomesSpiderSpider(scrapy.Spider):
 
     custom_settings = {
         'FEED_FORMAT': 'csv',
-        'CLOSESPIDER_ITEMCOUNT': 1000
-    }
+        'CLOSESPIDER_ITEMCOUNT': 1000,
+        'ROBOTSTXT_OBEY': True,
+        'DOWNLOAD_DELAY': 2,
+        'RANDOMIZE_DOWNLOAD_DELAY': True,
+        'CONCURRENT_REQUESTS': 4,
+        'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_START_DELAY':2,
+        'AUTOTHROTTLE_MAX_DELAY': 10   
+            }
 
     def parse(self, response):
 

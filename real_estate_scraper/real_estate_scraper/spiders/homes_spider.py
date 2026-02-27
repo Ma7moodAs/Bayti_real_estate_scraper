@@ -65,8 +65,8 @@ class HomesSpiderSpider(scrapy.Spider):
         
         price_lines = response.xpath('//*[@id="profile-description"]//p[contains(.,"السعر")]')
 
-        for line in price_lines:
-            line = ' '.join(price_lines.xpath('.//text()').getall())
+        for p in price_lines:
+            line = ' '.join(p.xpath('.//text()').getall())
             line = line.replace('\xa0',' ')
             line = re.sub(r'\s+',' ',line).strip()
 

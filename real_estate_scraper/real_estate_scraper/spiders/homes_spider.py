@@ -63,15 +63,17 @@ class HomesSpiderSpider(scrapy.Spider):
         price_annualy = None
         sale_price = None
         
-        price_lines = response.xpath('//*[@id="profile-description"]//p[contains(.,"دينار")]')
+        price_lines = response.xpath('//*[@id="profile-description"]//p')
 
-        all_price_text = response.xpath('//*[contains(text(),"السعر")]//text()').getall()
-        print("ALL RAW PRICE TEXT:", all_price_text)
+        #all_price_text = response.xpath('//*[contains(text(),"السعر")]//text()').getall()
+        #print("ALL RAW PRICE TEXT:", all_price_text)
         for p in price_lines:
             line = ' '.join(p.xpath('.//text()').getall())
             line = line.replace('\xa0',' ')
             line = re.sub(r'\s+',' ',line).strip()
 
+            if 'دينار' not in line:
+                continue
             number_match =  re.search(r'([\d,]+)',line)
             if not number_match:
                 continue

@@ -63,15 +63,19 @@ class HomesSpiderSpider(scrapy.Spider):
         price_annualy = None
         sale_price = None
         
-        price_lines = response.xpath('//*[@id=profile-description]//p[contains(text(),"السعر")]/text()').getall()
-        
-        for line in price_lines:
+        price_lines = response.xpath('//*[@id="profile-description"]//p[contains(.,"السعر")]')
 
-            line = line.replace('\xa0',' ').strip()
-            number_match  = re.search(r'([\d,]+)',line)
+        for line in price_lines:
+            line = ' '.join(price_lines.xpath('.//text()').getall())
+            line = line.replace('\xa0',' ')
+            line = re.sub(r'\s+',' ',line).strip()
+
+            number_match =  re.search(r'([\d,]+)',line)
             if not number_match:
                 continue
-            price_value = int(number_match.group(1).replace(',',''))
+
+            price_value = int(number_match.group(1).replace(',',''))  
+          
             #line_clean = line.replace('(','').replace(')','')
             if 'شهري' in line:
                 price_monthly = price_value

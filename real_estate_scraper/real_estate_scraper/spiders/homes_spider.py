@@ -48,10 +48,24 @@ class HomesSpiderSpider(scrapy.Spider):
 
         # Bedrooms number extraction
         Bedrooms = response.css('i[title="Bedroom"] + p span.font-wt-600::text').get()
-        Bedrooms = int(Bedrooms.strip()) if Bedrooms else None
+        #Bedrooms = int(Bedrooms.strip()) if Bedrooms else None
+        if Bedrooms:
+            Bedrooms = Bedrooms.strip()
+            if Bedrooms.isdigit():
+                Bedrooms = int(Bedrooms)
+            elif Bedrooms.upper() == 'ST':
+                Bedrooms = 0
+            else:
+                Bedrooms = None
+        else:
+            Bedrooms = None
         # Bathrooms number extraction
         Bathrooms = response.css('i[title="Bathroom"] + p span.font-wt-600::text').get()
-        Bathrooms = int(Bathrooms.strip()) if Bathrooms else None
+        Bathrooms = Bathrooms.strip() if Bathrooms else None
+        if Bathrooms and Bathrooms.isdigit():
+            Bathrooms = int(Bathrooms)
+        else:
+            Bathrooms = None
         # Built up area extraction
         Area_sqm = response.css('i[title="Built Up Area"] + p span.font-wt-600::text').get()
         Area_sqm = float(Area_sqm.strip()) if Area_sqm else None
